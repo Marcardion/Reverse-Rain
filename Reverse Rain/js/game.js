@@ -26,9 +26,9 @@ GameState.prototype.create = function(){
     this.platformVerticalSpeed = 50;
     
     //create particle
-    emitter = game.add.emitter(0, 0, 100);
-    emitter.makeParticles('splash');
-    emitter.gravity = 200;
+    this.particleEmitter = this.game.add.emitter(0, 0, 100);
+    // Utilizando o asset particle para compor as partículas
+    this.particleEmitter.makeParticles('splash');
     
     
     //set player in stage
@@ -81,6 +81,10 @@ GameState.prototype.update = function() {
         
     }
     
+    //emitter splash
+    this.game.physics.arcade.overlap(this.player, this.platforms, this.platformCollision, null, this);
+    
+    
     if(this.player.y > 650)
     {
         this.game.state.start('lose');
@@ -93,9 +97,7 @@ GameState.prototype.update = function() {
     
     //if((this.spaceBar.isDown || cursors.up.isDown) && (this.player.body.touching.down || (!this.player.body.touching.down && firstJump))){
     if((this.player.body.touching.down || (!this.player.body.touching.down && firstJump))){
-         
-        //emitter 
-        particleBurst(this.player);
+        
         
         //play sound
         this.jumpSound.play();
@@ -231,19 +233,23 @@ function ChangeBGColor()
 
 
 
-function particleBurst(pointer) {
 
-    //  Position the emitter where the mouse/touch event was
-    emitter.x = pointer.x;
-    emitter.y = pointer.y;
 
-    //  The first parameter sets the effect to "explode" which means all particles are emitted at once
-    //  The second gives each particle a 2000ms lifespan
-    //  The third is ignored when using burst/explode mode
-    //  The final parameter (10) is how many particles will be emitted in this single burst
-    emitter.start(true, 2000, null, 10);
-
+GameState.prototype.platformCollision = function(player, platform){
+   
+    this.particleEmitter.x = player.x;
+    this.particleEmitter.y = player.y;
+    // Depois disso, é só ativá-lo com os parâmetros abaixo:
+    // "true" indica que irá emitir todas as partículas simultaneamente
+    // 500 é o tempo de emissão em milissegundos
+    // o terceiro parâmetro pode ficar como null
+    // 10 é o número de partículas
+    this.particleEmitter.start(true, 500, null, 10);
+    // Por fim, vamos remover a moeda do jogo
+    
 }
+
+
 
 function destroyEmitter() {
 
