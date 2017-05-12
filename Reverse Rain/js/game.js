@@ -5,10 +5,15 @@ var GameState = function(game) {};
 GameState.prototype.preload = function() {
     
     this.game.load.image('player', 'assets/gotinha_03.png');
-    this.game.load.image('platform', 'assets/wallHorizontal.png');
+    this.game.load.image('platform', 'assets/wallhorizontal.png');
+    this.game.load.image('moving platform', 'assets/wall horizontal roxa.png');
     this.game.load.image('splash', 'assets/pixel.png');
     this.game.load.audio('jumpSound', 'assets/jump.ogg');
     this.game.load.audio('bgMusic', 'assets/bg_music.ogg');
+    
+    this.game.load.image('bottom', 'assets/bottom.png');
+    this.game.load.image('cloud', 'assets/cloud.png');
+    this.game.load.image('cloud side', 'assets/cloud_side.png');
 }
 
 var cursors;
@@ -21,7 +26,13 @@ GameState.prototype.create = function(){
     //Activate physics
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     
-    this.game.stage.backgroundColor = "3399ff";
+    this.game.stage.backgroundColor = "BC8BB2";
+    
+    this.game.add.sprite(0, 300, 'bottom');
+    this.game.add.sprite(100, 100, 'cloud');
+    this.game.add.sprite(-100, -50, 'cloud side');
+    this.game.add.sprite(640, -20, 'cloud side');
+    
     
     this.platformVerticalSpeed = 50;
     
@@ -46,9 +57,9 @@ GameState.prototype.create = function(){
     this.platforms = this.game.add.group();
     this.platforms.enableBody = true;
     
-    this.movingPlatform = this.platforms.create(300, 450, 'platform');
+    this.movingPlatform = this.platforms.create(300, 450, 'moving platform');
     this.normalPlatform = this.platforms.create(200, 300, 'platform');
-    this.movingPlatform2 = this.platforms.create(300, 150, 'platform');
+    this.movingPlatform2 = this.platforms.create(300, 150, 'moving platform');
     this.normalPlatform2 = this.platforms.create(200, 0, 'platform');
     this.normalPlatform3 = this.platforms.create(100, -100, 'platform');
     this.platforms.setAll('body.immovable', true);
@@ -69,6 +80,7 @@ GameState.prototype.create = function(){
     
     this.gameTime = 0;
     this.coundown = this.game.add.text(15, 15, "Your Time: "  + this.gameTime, {fill: "#ffffff"});
+    this.weather = 0;
 }
 
 GameState.prototype.update = function() {
@@ -107,13 +119,6 @@ GameState.prototype.update = function() {
         this.player.body.velocity.y = -450;
         if(firstJump) firstJump = false;
         else firstJump = true;
-    }
- 
-    
-    else if (cursors.down.isDown && !this.player.body.touching.down){
-             
-        this.player.body.velocity.x = 0;
-        this.player.body.velocity.y = 550;
     }
     
     
@@ -213,16 +218,34 @@ GameState.prototype.update = function() {
     //Increasing Speed and Game Time
     this.platformVerticalSpeed = this.platformVerticalSpeed + 0.030;
     this.gameTime = this.gameTime + 0.030;
-    this.coundown.text = "Your Time: "  + this.gameTime.toPrecision(2);
+    this.weather = this.weather + 0.030
+    this.coundown.text = "Your Time: "  + this.gameTime.toPrecision(4);
     
     // Change BGColor
-    if(this.gameTime >= 20 && this.gameTime <= 40)
+    if(this.weather >= 20 && this.weather <= 40)
         {
-           this.game.stage.backgroundColor = "#1e5b99";
+           this.game.stage.backgroundColor = "EFD970";
         }
-    else if(this.gameTime >= 40)
+    else if(this.weather >= 40 && this.weather <= 60)
         {
-           this.game.stage.backgroundColor = "#050f19";  
+           this.game.stage.backgroundColor = "E2B76A";  
+        }
+    else if(this.weather >= 60 && this.weather <= 80)
+        {
+           this.game.stage.backgroundColor = "81C4C6";  
+        }
+    else if(this.weather >= 80 && this.weather <= 100)
+        {
+           this.game.stage.backgroundColor = "6DC6BD";  
+        }
+    else if(this.weather >= 100 && this.weather <= 120)
+        {
+           this.game.stage.backgroundColor = "4D5E7A";  
+        }
+    else if(this.weather >= 120)
+        {
+           this.game.stage.backgroundColor = "BC8BB2"; 
+           this.weather = 0;
         }
 }
 
