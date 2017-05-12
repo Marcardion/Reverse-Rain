@@ -4,15 +4,20 @@ var GameState = function(game) {};
 
 GameState.prototype.preload = function() {
     
-    this.game.load.image('player', 'assets/player.png');
+    this.game.load.image('player', 'assets/gotinha_03.png');
     this.game.load.image('platform', 'assets/wallHorizontal.png');
+    this.game.load.image('splash', 'assets/pixel.png');
     this.game.load.audio('jumpSound', 'assets/jump.ogg');
+    this.game.load.audio('bgMusic', 'assets/bg_music.ogg');
 }
 
 var cursors;
 var firstJump = true;
+var playingMusic = false;
+var emitter;
 
 GameState.prototype.create = function(){
+    
     //Activate physics
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     
@@ -20,8 +25,15 @@ GameState.prototype.create = function(){
     
     this.platformVerticalSpeed = 50;
     
+    //create particle
+    emitter = game.add.emitter(0, 0, 100);
+    emitter.makeParticles('splash');
+    emitter.gravity = 200;
+    
+    
     //set player in stage
     this.player = this.game.add.sprite(400, 400, 'player');
+    this.player.scale.setTo(0.12, 0.12);
     this.player.anchor.setTo(0.5, 0.5);
     
     //activate physics on player
@@ -47,6 +59,7 @@ GameState.prototype.create = function(){
     
     //ADD sounds
     this.jumpSound = this.game.add.audio('jumpSound');
+    this.bgMusic = this.game.add.audio('bgMusic');
     
     console.debug("Mensagem de teste");
     
@@ -59,6 +72,14 @@ GameState.prototype.create = function(){
 }
 
 GameState.prototype.update = function() {
+    
+    if(!playingMusic){
+        
+         //Play music
+        this.bgMusic.play();
+        playingMusic = true;
+        
+    }
     
     if(this.player.y > 650)
     {
@@ -73,6 +94,9 @@ GameState.prototype.update = function() {
     //if((this.spaceBar.isDown || cursors.up.isDown) && (this.player.body.touching.down || (!this.player.body.touching.down && firstJump))){
     if((this.player.body.touching.down || (!this.player.body.touching.down && firstJump))){
          
+        //emitter 
+        particleBurst(this.player);
+        
         //play sound
         this.jumpSound.play();
         this.player.angle = 0;
@@ -203,4 +227,26 @@ GameState.prototype.update = function() {
 function ChangeBGColor()
 {
     
+}
+
+
+
+function particleBurst(pointer) {
+
+    //  Position the emitter where the mouse/touch event was
+    emitter.x = pointer.x;
+    emitter.y = pointer.y;
+
+    //  The first parameter sets the effect to "explode" which means all particles are emitted at once
+    //  The second gives each particle a 2000ms lifespan
+    //  The third is ignored when using burst/explode mode
+    //  The final parameter (10) is how many particles will be emitted in this single burst
+    emitter.start(true, 2000, null, 10);
+
+}
+
+function destroyEmitter() {
+
+    emitter.destroy();
+
 }
