@@ -7,8 +7,6 @@ GameState.prototype.preload = function() {
     this.game.load.image('player', 'assets/player.png');
     this.game.load.image('platform', 'assets/wallHorizontal.png');
     this.game.load.audio('jumpSound', 'assets/jump.ogg');
-    this.game.load.image('coin', 'assets/coin.png');
-    this.game.load.audio('coinSound', 'assets/coin.ogg');
 }
 
 var cursors;
@@ -49,29 +47,15 @@ GameState.prototype.create = function(){
     
     //ADD sounds
     this.jumpSound = this.game.add.audio('jumpSound');
-    this.coinSound = this.game.add.audio('coinSound');
     
     console.debug("Mensagem de teste");
     
     this.spaceBar = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     cursors = game.input.keyboard.createCursorKeys();
     
-    // Game State
-    this.coinCount = 3;
-
-    this.coins = this.game.add.group();
-    this.coins.enableBody = true;
-    this.coins.setAll('body.immovable', true);
     
     this.gameTime = 0;
     this.coundown = this.game.add.text(15, 15, "Your Time: "  + this.gameTime, {fill: "#ffffff"});
-}
-
-GameState.prototype.coinCollision = function(player, coin)
-{
-    this.coinSound.play();
-    this.coinCount--;
-    coin.kill();
 }
 
 GameState.prototype.update = function() {
@@ -83,7 +67,6 @@ GameState.prototype.update = function() {
     
     //Collide with group
     this.game.physics.arcade.collide(this.player, this.platforms);
-    this.game.physics.arcade.overlap(this.player, this.coins, this.coinCollision, null, this);
     
     //UP and DOWN controls
     
@@ -174,7 +157,7 @@ GameState.prototype.update = function() {
     }
     
    
-    
+    // Resetting the platforms that go beyond the boundaries
     if(this.movingPlatform.position.y > 650)
         {
             this.movingPlatform.position.x = game.rnd.integerInRange(50, 600);
@@ -201,10 +184,12 @@ GameState.prototype.update = function() {
             this.movingPlatform2.position.y = game.rnd.integerInRange(-25, 25);
         }
     
+    //Increasing Speed and Game Time
     this.platformVerticalSpeed = this.platformVerticalSpeed + 0.030;
     this.gameTime = this.gameTime + 0.030;
     this.coundown.text = "Your Time: "  + this.gameTime.toPrecision(2);
     
+    // Change BGColor
     if(this.gameTime >= 20 && this.gameTime <= 40)
         {
            this.game.stage.backgroundColor = "#1e5b99";
@@ -213,4 +198,9 @@ GameState.prototype.update = function() {
         {
            this.game.stage.backgroundColor = "#050f19";  
         }
+}
+
+function ChangeBGColor()
+{
+    
 }
